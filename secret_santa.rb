@@ -16,8 +16,20 @@ class SecretSanta
   end
 
   def pick_santas(potentials)
-    potentials.map do |potential|
+    picked = potentials.map do |potential|
       { "#{potential.keys[0]}" => potential.values.flatten.sample }
+    end
+
+    assigned = picked.map do |santa|
+      santa.map do |k, v|
+        v
+      end
+    end
+
+    if assigned.flatten.uniq.count != @santas.count
+      pick_santas(potentials)
+    else
+      return picked
     end
   end
 end
