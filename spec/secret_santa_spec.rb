@@ -9,7 +9,7 @@ describe SecretSanta do
 
   it "doesn't allow someone to be assigned to their family member" do
     secret_santa = SecretSanta.new('./santas.txt')
-    expect(secret_santa.potential_santas[0]["Alice Jones"]).to eql [["Demi", "Smith", "<demi@example.com>"], ["Eli", "Smith", "<eli@example.com>"], ["Florence", "Williams", "<florence@example.com>"]]
+    expect(secret_santa.potential_santas[0]["Alice Jones"]).to eql ["<demi@example.com>", "<eli@example.com>", "<florence@example.com>"]
   end
 
   it "picks a random person from the potential santas list" do
