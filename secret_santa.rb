@@ -1,5 +1,5 @@
 class SecretSanta
-  attr_accessor :santas
+  attr_reader :santas
 
   def initialize(file)
     @santas = File.open(file).read.split("\n").map { |s| s.split }
