@@ -7,22 +7,13 @@ describe SecretSanta do
     expect(secret_santa.santas).to_not be_empty
   end
 
-  it "doesn't allow someone to be assigned to their family member" do
+  it "doesn't allow a santa to be assigned a family member" do
     secret_santa = SecretSanta.new('./santas.txt')
-    expect(secret_santa.potential_santas[0]["Alice Jones"]).to eql ["<demi@example.com>", "<eli@example.com>", "<florence@example.com>"]
+    expect(secret_santa.santas.first.potential_assignees.map(&:family_name)).to_not include secret_santa.santas.first.family_name
   end
 
   it "picks a random person from the potential santas list" do
     secret_santa = SecretSanta.new('./santas.txt')
-    potentials = secret_santa.potential_santas
-    picked = secret_santa.pick_santas(potentials)
-
-    assigned = picked.map do |santa|
-      santa.map do |k, v|
-        v
-      end
-    end
-
-    expect(assigned.flatten.uniq.count).to eql secret_santa.santas.count
+    expect(secret_santa.santas.map(&:assignee).map(&:email).uniq.count).to eql secret_santa.santas.count
   end
 end

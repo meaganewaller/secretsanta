@@ -1,42 +1,33 @@
 class SecretSanta
+  Santa = Struct.new(:first_name, :family_name, :email, :potential_assignees, :assignee)
+
   attr_reader :santas
 
   def initialize(file)
-    @santas = File.open(file).read.split("\n").map { |s| s.split }
+    santa_info = File.open(file).read.split("\n")
+    @santas = santa_info.each_with_object([]) do |santa, santas|
+      first_name, family_name, email = santa.split
+      santas << Santa.new(first_name, family_name, email)
+    end
+    set_potential_assignees
+    set_assignee
   end
 
-  def potential_santas
-    # Gives a data structure that looks like:
-    # [{ "First Name Family Name" => ["email", "email", "email"]}]
+  def set_potential_assignees
     @santas.map do |santa|
-      { "#{santa[0]} #{santa[1]}" => @santas.reject { |s| s[1] == santa[1] }.map { |s| s[2]}.flatten }
+      santa.potential_assignees = @santas.reject { |s| s.family_name == santa.family_name }
     end
   end
 
-  def pick_santas(potentials)
-    picked = potentials.map do |potential|
-      { "#{potential.keys[0]}" => potential.values.flatten.sample }
+  def set_assignee
+    @santas.map do |santa|
+      santa.assignee = santa.potential_assignees.sample
     end
 
-    assigned = get_assigned(picked)
-
-    if unique_assigneds(assigned) != @santas.count
-      pick_santas(potentials)
+    if @santas.map(&:assignee).map(&:email).uniq.count != @santas.count
+      set_assignee
     else
-      return picked
+      return
     end
-  end
-
-  private
-  def get_assigned(picked)
-    picked.map do |santa|
-      santa.map do |k, v|
-        v
-      end
-    end
-  end
-
-  def unique_assigneds(assigned)
-    assigned.flatten.uniq.count
   end
 end
